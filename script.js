@@ -3,6 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
 
+    // Helper function to check if string is empty or only spaces
+    function isEmptyOrSpaces(str) {
+        return str === null || str.match(/^ *$/) !== null;
+    }
+
     // Load tasks from Local Storage on page load
     function loadTasks() {
         const storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
@@ -13,8 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveTasks() {
         const tasks = [];
         taskList.querySelectorAll('li').forEach(li => {
-            // The textContent includes the task text plus 'Remove' button text,
-            // so we remove the button text from the li textContent:
             tasks.push(li.firstChild.textContent);
         });
         localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -29,19 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add a new task to the list and optionally save it to Local Storage
     function addTask(taskText, save = true) {
-        if (taskText.trim() === '') {
+        if (isEmptyOrSpaces(taskText)) {
             alert('Please enter a task.');
             return;
         }
 
         const li = document.createElement('li');
-        // Use a text node to keep task text separate from button text
         const textNode = document.createTextNode(taskText);
         li.appendChild(textNode);
 
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
-        removeButton.className = 'remove-btn'; // use className instead of classList.add
+        removeButton.className = 'remove-btn';
         removeButton.onclick = () => {
             taskList.removeChild(li);
             removeTask(taskText);
